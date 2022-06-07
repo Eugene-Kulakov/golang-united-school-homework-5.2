@@ -43,7 +43,7 @@ func (c *Cache) Put(key, value string) {
 
 func (c *Cache) Keys() []string {
 	var ans []string
-	for key, value := range c.valuesMap {
+	for key, _ := range c.valuesMap {
 		//if value.Time.Before(time.Now()) {
 		ans = append(ans, key)
 		//} else {
