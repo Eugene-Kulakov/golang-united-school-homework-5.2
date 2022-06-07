@@ -28,27 +28,27 @@ func (c *Cache) Get(key string) (string, bool) {
 	if !found {
 		return "", false
 	}
-	//if st.Time.After(time.Now()) {
-	//	delete(c.valuesMap, key)
-	//	return "", false
-	//}
+	if st.Time.After(time.Now()) {
+		delete(c.valuesMap, key)
+		return "", false
+	}
 	return st.Str, true
 }
 
 func (c *Cache) Put(key, value string) {
-	t := time.Unix(1<<63-1, 0)
+	t := time.Unix(1<<64-1, 0)
 	st := StringTime{value, t}
 	c.valuesMap[key] = st
 }
 
 func (c *Cache) Keys() []string {
 	var ans []string
-	for key, _ := range c.valuesMap {
-		//if value.Time.Before(time.Now()) {
-		ans = append(ans, key)
-		//} else {
-		//	delete(c.valuesMap, key)
-		//}
+	for key, value := range c.valuesMap {
+		if value.Time.Before(time.Now()) {
+			ans = append(ans, key)
+		} else {
+			delete(c.valuesMap, key)
+		}
 	}
 	return ans
 }
