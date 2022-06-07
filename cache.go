@@ -1,6 +1,8 @@
 package cache
 
-import "time"
+import (
+	"time"
+)
 
 type StringTime struct {
 	Str  string
@@ -8,20 +10,26 @@ type StringTime struct {
 }
 
 type Cache struct {
-	ValuesMap map[string]StringTime
+	valuesMap map[string]StringTime
+}
+
+func (c *Cache) Init() {
+	c.valuesMap = make(map[string]StringTime)
 }
 
 func NewCache() Cache {
-	return Cache{}
+	var c Cache
+	c.Init()
+	return c
 }
 
 func (c *Cache) Get(key string) (string, bool) {
-	st, found := c.ValuesMap[key]
+	st, found := c.valuesMap[key]
 	if !found {
 		return "", false
 	}
 	if st.Time.After(time.Now()) {
-		delete(c.ValuesMap, key)
+		delete(c.valuesMap, key)
 		return "", false
 	}
 	return st.Str, true
@@ -30,12 +38,12 @@ func (c *Cache) Get(key string) (string, bool) {
 func (c *Cache) Put(key, value string) {
 	t := time.Unix(1<<63-1, 0)
 	st := StringTime{value, t}
-	c.ValuesMap[key] = st
+	c.valuesMap[key] = st
 }
 
 func (c *Cache) Keys() []string {
 	var ans []string
-	for key, value := range c.ValuesMap {
+	for key, value := range c.valuesMap {
 		if value.Time.Before(time.Now()) {
 			ans = append(ans, key)
 		}
@@ -45,5 +53,5 @@ func (c *Cache) Keys() []string {
 
 func (c *Cache) PutTill(key, value string, deadline time.Time) {
 	st := StringTime{value, deadline}
-	c.ValuesMap[key] = st
+	c.valuesMap[key] = st
 }
