@@ -28,7 +28,7 @@ func (c *Cache) Get(key string) (string, bool) {
 	if !found {
 		return "", false
 	}
-	if !st.Time.IsZero() && st.Time.After(time.Now()) {
+	if !st.Time.IsZero() && st.Time.Before(time.Now()) {
 		delete(c.valuesMap, key)
 		return "", false
 	}
@@ -44,7 +44,7 @@ func (c *Cache) Put(key, value string) {
 func (c *Cache) Keys() []string {
 	var ans []string
 	for key, value := range c.valuesMap {
-		if value.Time.IsZero() || value.Time.Before(time.Now()) {
+		if value.Time.IsZero() || value.Time.After(time.Now()) {
 			ans = append(ans, key)
 		} else {
 			delete(c.valuesMap, key)
